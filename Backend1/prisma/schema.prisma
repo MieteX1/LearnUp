@@ -1,0 +1,302 @@
+generator client {
+  provider = "prisma-client-js"
+  //for raw sql requests
+  previewFeatures = ["typedSql"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int               @id @default(autoincrement())
+  login           String?
+  password        String?
+  profile_picture String?
+  email           String            @unique
+  last_activity   DateTime?
+  role            Role              @default(user)
+  ban_date        DateTime?         
+  punishment      DateTime?         
+  refresh_token   String?
+  is_verified     Boolean          @default(false)
+  created_at      DateTime         @default(now())
+  deleted_at      DateTime?
+  avatar_id       Int?
+
+  Subscription    Subscription[]
+  Task_collection Task_collection[]
+  Collection_rank Collection_rank[]
+  collection_complaints Collection_complaint[]
+  user_complaints_filed    User_complaint[] @relation("complainant")
+  user_complaints_received User_complaint[] @relation("accused")
+  Comment_complaint Comment_complaint[]
+  evaluations     Evaluation[]
+  Activity_archive Activity_archive[]
+
+}
+
+model Activity_archive {
+  id              Int               @id @default(autoincrement())
+  userId          Int
+  createAt        DateTime
+  user    User        @relation(fields: [userId], references: [id], onDelete: SetDefault, onUpdate: NoAction)
+}
+model Upload_picture{
+  id                Int               @id @default(autoincrement())
+  file_name         String            @unique
+  path              String            @unique
+  mimetype          String
+  relatedId         Int  // Id zbioru lub użytkownika zależnie czy to avatar czy okładka zbioru
+  isProfilePicture  Boolean
+}
+
+model Task_collection {
+  id        Int         @id @default(autoincrement())
+  author_id Int
+  name      String
+  description     String?
+  is_public Boolean           @default(true)
+  type_id   Int
+  photo_id  Int?
+  updated_at DateTime?  @updatedAt
+
+  author    User        @relation(fields: [author_id], references: [id], onDelete: SetDefault, onUpdate: NoAction)
+  rank      Collection_rank[]
+  Card      Card[]
+  Task_open Task_open[]
+  Task_test Task_test[]
+  Task_match Task_match[]
+  Task_gap Task_gap[]
+
+  subscribers Subscription[]
+
+  answer_test   Answer_test[]
+  answer_open   Answer_open[]
+  answer_gap    Answer_gap[]
+  answer_match  Answer_match[]
+
+  collection_complaints Collection_complaint[]
+}
+
+model Task_open {
+  id              Int               @id @default(autoincrement())
+  collection_id   Int
+  category        String
+  difficulty      Difficulty        @default(easy)
+  order_          Int               @default(0)              
+  name            String
+  description     String?
+  Task_collection Task_collection?  @relation(fields: [collection_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+  
+model Task_test {
+  id              Int              @id @default(autoincrement())
+  collection_id   Int
+  category        String
+  difficulty      Difficulty        @default(easy)
+  order_          Int               @default(0)       
+  name            String
+  description     String?
+  Task_collection Task_collection? @relation(fields: [collection_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  Test_option     Test_option[]
+}
+
+model Card{
+  id              Int              @id @default(autoincrement())
+  collection_id   Int
+  category        String
+  difficulty      Difficulty        @default(easy)
+  order_          Int               @default(0)
+  name            String
+  description     String?
+  side1           String
+  side2           String
+  Task_collection Task_collection? @relation(fields: [collection_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Task_match{
+  id              Int              @id @default(autoincrement())
+  collection_id   Int
+  category        String
+  difficulty      Difficulty        @default(easy)
+  order_          Int               @default(0)       
+  description     String?
+  name            String
+  Task_collection Task_collection? @relation(fields: [collection_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  Match_option    Match_option[]  
+}
+
+model Task_gap{
+  id              Int              @id @default(autoincrement())
+  collection_id   Int
+  category        String
+  difficulty      Difficulty        @default(easy)
+  order_          Int               @default(0)       
+  description     String?
+  name            String
+  text            String
+  Task_collection Task_collection? @relation(fields: [collection_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  Gap_option      Gap_option[]
+}
+
+model Subscription {
+  id            Int                 @id @default(autoincrement())
+  subscriber_id Int
+  collection_id Int
+  notification  Boolean             @default(false)
+  collections   Task_collection     @relation(fields: [collection_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users         User                @relation(fields: [subscriber_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Evaluation {
+  id            Int                 @id @default(autoincrement())
+  user_id       Int           
+  collection_id Int           
+  comment       String           
+  answer        Int?            
+  updated_at    DateTime?            @updatedAt
+  is_deleted       Boolean           @default(false)
+
+  Evaluation_value      Evaluation_value[]
+  Comment_complaint Comment_complaint[]
+  user          User                @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Evaluation_value {
+  id            Int                 @id @default(autoincrement())
+  evaluation_id Int
+  evaluator_id  Int
+  is_positive   Boolean             @default(true)    
+
+  evaluation   Evaluation     @relation(fields: [evaluation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Collection_rank {
+  id            Int                 @id @default(autoincrement())
+  collection_id Int                 
+  user_id       Int                 
+  points        Int
+
+  user          User                @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  Task_collection Task_collection   @relation(fields: [collection_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+
+model Answer_test{
+  id              Int              @id @default(autoincrement())
+  user_id         Int
+  collection_id   Int
+  option_id       Int
+  test_id         Int
+  task_collection Task_collection     @relation(fields: [collection_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+model Answer_open{
+  id              Int              @id @default(autoincrement())
+  user_id         Int
+  collection_id   Int
+  answer          String
+  open_id         Int
+  task_collection Task_collection     @relation(fields: [collection_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+model Answer_gap{
+  id              Int              @id @default(autoincrement())
+  user_id         Int
+  collection_id   Int
+  //odpowiedź od ręki
+  answer          String
+  //do jakiej luki w tekście jest ta odpowiedź
+  option_id       Int
+  //id zadania
+  gap_id          Int
+  task_collection Task_collection     @relation(fields: [collection_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+model Answer_match{
+  id              Int              @id @default(autoincrement())
+  user_id         Int
+  collection_id   Int
+  option_id       Int
+  answer_id       Int
+  match_id        Int
+  task_collection Task_collection     @relation(fields: [collection_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Collection_type {
+  id  Int                           @id @default(autoincrement())
+  name String
+}
+
+model Test_option {
+  id        Int                     @id @default(autoincrement())
+  test_id   Int             
+  title     String              
+  is_answer Boolean             
+  Task_test Task_test               @relation(fields: [test_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Match_option {
+  id         Int                    @id @default(autoincrement())
+  match_id   Int            
+  title      String           
+  answer     String           
+  Task_match Task_match             @relation(fields: [match_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Gap_option {
+  id       Int                      @id @default(autoincrement())
+  gap_id   Int
+  //poprawna odpowiedź
+  answer   String
+  //miejsce luki w tekście
+  position Int
+  Task_gap Task_gap                 @relation(fields: [gap_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Collection_complaint{
+  id              Int               @id @default(autoincrement())
+  appliciant_id   Int
+  collection_id   Int
+  justification   String
+  created_at      DateTime          @default(now())
+  solved_at       DateTime?
+
+  task_collection Task_collection   @relation(fields: [collection_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  appliciant      User              @relation(fields: [appliciant_id], references: [id], onDelete: SetDefault, onUpdate: NoAction)
+}
+// TODO check appliciant_id in service if is exist
+model User_complaint{
+  id              Int               @id @default(autoincrement())
+  appliciant_id   Int
+  disturber_id    Int
+  justification   String
+  created_at      DateTime          @default(now())
+  solved_at       DateTime?
+
+  appliciant      User              @relation("complainant", fields: [appliciant_id], references: [id], onDelete: SetDefault, onUpdate: NoAction)
+  disturber       User              @relation("accused", fields: [disturber_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+model Comment_complaint{
+  id              Int               @id @default(autoincrement())
+  appliciant_id   Int
+  evaluation_id   Int
+  justification   String
+  created_at      DateTime          @default(now())
+  solved_at       DateTime?
+
+  comment         Evaluation        @relation(fields: [evaluation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  appliciant      User              @relation(fields: [appliciant_id], references: [id], onDelete: SetDefault, onUpdate: NoAction)
+}
+
+
+enum Role {
+  admin
+  moderator
+  user
+  vip
+}
+enum Difficulty {
+  easy
+  medium
+  hard
+}

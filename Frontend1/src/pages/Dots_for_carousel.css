@@ -1,0 +1,24 @@
+.slick-dots {
+  display: flex !important;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.slick-dots li button {
+  border-radius: 9999px;
+  transition: all 0.2s;
+}
+
+.slick-dots li.slick-active button {
+  transform: scale(1.5);
+}
+
+/* Pokazuj tylko 3 kropki */
+.slick-dots li:nth-child(n+4) {
+  display: none;
+}
+/* Pokazuj aktywną kropkę i jedną po niej */
+.slick-dots li.slick-active,
+.slick-dots li.slick-active+li {
+  display: block;
+}

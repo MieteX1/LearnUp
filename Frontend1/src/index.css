@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+:root {
+  font-family: Inter;
+  color-scheme: light dark;
+  background-color: #F5F5F5;
+  color: #111111;
+}
+.sansita-swashed-font {
+  font-family: "Sansita Swashed", system-ui;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
+.inter-font {
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 100;
+  font-style: normal;
+}
+input, textarea {
+  font-family: inherit;
+  font-feature-settings: inherit;
+  font-variation-settings: inherit;
+  font-size: 100%;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  color: black;
+  margin: 0;
+  background: white;
+border-color: #69DC9E
+}
+@layer base {
+  input[type="checkbox"] {
+    appearance: none; /* Wyłączenie domyślnego stylu */
+    background-color: white; /* Białe tło */
+    border: 2px solid black; /* Ramka wokół checkboxa */
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+  }
+
+  input[type="checkbox"]:checked {
+    background-color: white; /* Wymuszenie białego tła po zaznaczeniu */
+    border-color: black;
+  }
+
+  input[type="checkbox"]:checked::before {
+    content: "✓"; /* Dodanie symbolu ptaszka */
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  input[type="checkbox"]:focus {
+    outline: 2px solid #69DC9E; /* Styl dla focus */
+  }
+}
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out forwards;
+}
