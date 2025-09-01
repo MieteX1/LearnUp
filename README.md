@@ -46,25 +46,22 @@ Celem było opracowanie nowoczesnej platformy e-learningowej, umożliwiającej t
 ### Kroki  
 1. Sklonuj repozytorium  
    ```bash
-   git clone https://github.com/twoje-repo.git
-   cd twoje-repo
+   git clone https://github.com/MieteX1/LearnUp.git
    ```  
 2. Zainstaluj zależności (frontend i backend osobno):  
    ```bash
    npm install
    ```  
-3. Skonfiguruj plik `.env` dla backendu (dane do bazy, klucze JWT).  
-4. Uruchom bazę danych i wykonaj migracje Prisma:  
+3. Uruchom bazę danych i wykonaj migracje Prisma:  
    ```bash
    npx prisma migrate dev
    ```  
-5. Uruchom aplikację:  
+4. Uruchom aplikację:  
    - Frontend: `npm run dev`  
    - Backend: `npm run start:dev`  
 
 ## 📊 Architektura  
 ![Diagram przypadków użycia](docs/usecase.png)  
-*(przykładowy diagram z dokumentacji – wrzuć do folderu `docs/`)*  
 
 ## 📌 Możliwy rozwój  
 - Rozbudowa kreatora zbiorów o kolejne typy zadań.  
